@@ -36,10 +36,6 @@ def translate_language_to_iso6392(language):
 
 
 
-def test():
-	get_all_subtitles("Banshee",3,1)
-
-
 #########################
 #	Internal methods	#
 #########################
@@ -47,7 +43,9 @@ def test():
 def __get_release(release_tag):
 	for s in release_tag.p.strings:
 		if "versión" in s.lower():
-			return s.split(" ",2)[1].strip()
+			tmp =  s.split(" ")[1:-2]
+			" ".join(tmp)
+			return " ".join(tmp)
 
 def __get_subtitles_from_release(release_tag):
 	#subtitles = {}
@@ -56,7 +54,7 @@ def __get_subtitles_from_release(release_tag):
 		raw_href = language.parent.next_sibling.next_sibling
 		if(__get_class_as_string(raw_href['class'])!="descargar green"):
 			continue
-		subtitle = Subtitle(language.strong.string,__get_most_updated_subtitle(raw_href))
+		subtitle = Subtitle(translate_language_to_iso6392(language.strong.string),__get_most_updated_subtitle(raw_href))
 		subtitles.add(subtitle)
 
 
