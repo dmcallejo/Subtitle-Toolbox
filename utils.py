@@ -27,6 +27,9 @@ def sanitize_show_name(show,debug=False):
 def get_soup_from_URL(url,debug=False):
 	return BeautifulSoup(get_page_from_URL(url,debug=False))
 
+def parse_tvseries_filename(file_name):
+	""" TODO """
+	pass
 
 
 MODULE_EXTENSIONS = ('.py', '.pyc', '.pyo')
@@ -39,3 +42,25 @@ def package_contents(package_name):
 	return set([os.path.splitext(module)[0]
 		for module in os.listdir(pathname)
 		if module.endswith(MODULE_EXTENSIONS)])
+
+def download_file(url,file_name):
+	u = urllib2.urlopen(url)
+	f = open(file_name, 'wb')
+	meta = u.info()
+	file_size = int(meta.getheaders("Content-Length")[0])
+	print "Downloading: %s Bytes: %s" % (file_name, file_size)
+
+	file_size_dl = 0
+	block_sz = 8192
+	while True:
+		buffer = u.read(block_sz)
+		if not buffer:
+			break
+
+		file_size_dl += len(buffer)
+		f.write(buffer)
+		status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+		status = status + chr(8)*(len(status)+1)
+		print status,
+
+	f.close()
