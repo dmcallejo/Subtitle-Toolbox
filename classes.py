@@ -74,16 +74,21 @@ class SubtitleRelease:
 	def add(self,subtitle):
 		self.subtitles.append(subtitle)
 
+	__repr__=__str__
+
 class Episode:
 	""" Holds the subtitles (SubtitleRelease) from the several releases of an episode. """
 
-	def __init__(self):
-		pass
+	def __init__(self,series=None,season=None,episode=None):
+		self._series=series
+		self._season=season
+		self._episode=episode
+		self._releases=[]
 
 	def __str__(self):
 		string = "Series: "+self.series+" "+"S"+self.season+"E"+self.episode
-		for release in releases:
-			string += release
+		for release in self.releases:
+			string += str(release)
 
 		return string
 
@@ -101,9 +106,9 @@ class Episode:
 	def season():
 		doc = "The season property."
 		def fget(self):
-			return self.season
+			return self._season
 		def fset(self, value):
-			self.season = value
+			self._season = value
 		def fdel(self):
 			del self.season
 		return locals()

@@ -25,7 +25,11 @@ def sanitize_show_name(show,debug=False):
 		print "DEBUG: Sanitized show name: ",show
 
 def get_soup_from_URL(url,debug=False):
-	return BeautifulSoup(get_page_from_URL(url,debug=False))
+	response = get_page_from_URL(url,debug=False)
+	if response != None:
+		return BeautifulSoup(response)
+	else:
+		return None
 
 def parse_tvseries_filename(file_name):
 	""" TODO """
@@ -44,7 +48,16 @@ def package_contents(package_name):
 		if module.endswith(MODULE_EXTENSIONS)])
 
 def download_file(url,file_name):
-	u = urllib2.urlopen(url)
+	req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser",'Referer' : "http://www.subtitulos.es/"}) 
+	u = urllib2.urlopen(req,timeout=10)
+	f = open(file_name, 'wb')
+	f.write(u.read())
+	f.close()
+
+
+def download_file_adv(url,file_name):
+	req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
+	u = urllib2.urlopen(req,timeout=10)
 	f = open(file_name, 'wb')
 	meta = u.info()
 	file_size = int(meta.getheaders("Content-Length")[0])
