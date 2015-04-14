@@ -64,16 +64,33 @@ def download_by_file(video_file,output="../"):
 	else:
 		path=""
 		filename=video_file
-	series = re.search('.+(?=\.[Ss][0-9][0-9])',filename).group(0)
-	if series!=None:
-		series=series.replace('.',' ')
+
+	#
+	# Series.S01.E02.info.mkv case
+	#
+	if(re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None): 
+		series = re.search('.+(?=\.[Ss][0-9][0-9])',filename).group(0)
+		season = re.search('(?<=[Ss])[0-9]{1,2}(?=[Ee][0-9][0-9]\.)',filename).group(0)
+		episode = re.search('(?<=[Ss][0-9][0-9][Ee])[0-9][0-9]',filename).group(0)
+		info = re.search('(?<=\.[Ss][0-9][0-9][Ee][0-9][0-9]\.).+(?=\.mkv)',filename).group(0)
+	#
+	# Series.1x02.info.mkv case
+	#
+	elif(re.search('\.[0-9]{1,2}x[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None):
+		series = re.search('.+(?=\.[0-9]{1,2}[xX])',filename).group(0)
+		season = re.search('(?<=)[0-9]{1,2}(?=[xX][0-9][0-9]\.)',filename).group(0)
+		episode = re.search('(?<=[0-9][xX])[0-9][0-9]',filename).group(0)
+		info = re.search('(?<=\.[0-9][Xx][0-9][0-9]\.).+(?=\.mkv)',filename).group(0)
 	else:
 		print "ERROR parsing filename "+filename
 		return 1
-	season = re.search('(?<=[Ss])[0-9][0-9](?=[Ee][0-9][0-9]\.)',filename).group(0)
-	episode = re.search('(?<=[Ss][0-9][0-9][Ee])[0-9][0-9]',filename).group(0)
-	info = re.search('(?<=\.[Ss][0-9][0-9][Ee][0-9][0-9]\.).+(?=\.mkv)',filename).group(0)
-	
+
+	if series!=None:
+		series=series.replace('.',' ')
+		series=series.replace('_',' ')
+	else:
+		print "ERROR parsing getting series name from "+filename
+		return 1
 
 	episode_name = sites.subtitulos_es.get_episode_name(series,season,episode)
 	if episode_name is None:

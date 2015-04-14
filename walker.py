@@ -18,7 +18,7 @@ outputDir = '/home/pi/WD3/SeriesHD/'
 transmission = tt.Transmission_toolbox()
 for dirName, subdirList, fileList in os.walk(rootDir):
 	for fname in fileList:
-		if re.search('.mkv$',fname,flags=re.IGNORECASE) != None and re.search('\.S[0-9][0-9]E[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None and re.search('sample',fname,flags=re.IGNORECASE) == None:
+		if re.search('.mkv$',fname,flags=re.IGNORECASE) != None and (re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None or re.search('\.[0-9]{1,2}x[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None) and re.search('sample',fname,flags=re.IGNORECASE) == None:
 			if dirName != rootDir:
 				query=dirName.replace(rootDir,"")+"/"+fname
 			else:
