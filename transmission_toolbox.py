@@ -93,7 +93,10 @@ class Transmission_toolbox:
 
 
 	def check_and_stop(self,torrent):
-		""" Checks if downloaded data is valid and stops the torrent """
+		""" Checks if downloaded data is valid and stops the torrent. Does nothing if already stopped. """
+		if (torrent.status=="stopped"):
+			return 0
+
 		print "Verifying torrent..."
 		self.tc.verify_torrent(torrent.id)
 		torrent=self.tc.get_torrent(torrent.id)
