@@ -3,7 +3,7 @@
 import utils
 import iso6392
 import re
-from classes import *
+from classes.Entities import *
 from bs4 import BeautifulSoup
 
 URL = "http://www.subtitulos.es/"
