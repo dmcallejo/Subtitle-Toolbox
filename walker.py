@@ -39,7 +39,7 @@ try:
 				if torrent==None:
 					print "/!\\Torrent not found."
 				else:
-					if (torrent.progress!=100 or transmission.check_and_stop(torrent)!=0):
+					if (torrent.progress!=100 or transmission.verify_and_stop(torrent)!=0):
 						continue
 
 				if re.search('.rar$',fname,flags=re.IGNORECASE):

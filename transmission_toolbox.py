@@ -92,8 +92,8 @@ class Transmission_toolbox:
 		self.tc.remove_torrent(tId,delete_data=True)
 
 
-	def check_and_stop(self,torrent):
-		""" Checks if downloaded data is valid and stops the torrent. Does nothing if already stopped. """
+	def verify_and_stop(self,torrent):
+		""" Checks if downloaded data is valid through transmission's own verify data and stops the torrent. Does nothing if already stopped. """
 		if (torrent.status=="stopped"):
 			return 0
 
