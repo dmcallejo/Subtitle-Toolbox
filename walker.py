@@ -51,6 +51,7 @@ try:
 
 
 				elif re.search('.mkv$',fname,flags=re.IGNORECASE) != None and (re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None or re.search('\.[0-9]{1,2}x[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None) and re.search('sample',fname,flags=re.IGNORECASE) == None:
+					sys.stdout.flush()
 					status = st.download_by_file(dirName+"/"+fname,outputDir)
 					if (status == 0 and torrent!=None):
 						print "Deleting: ",torrent

@@ -99,10 +99,11 @@ class Transmission_toolbox:
 
 		print "Verifying torrent..."
 		self.tc.verify_torrent(torrent.id)
-		torrent=self.tc.get_torrent(torrent.id)
+		time.sleep(2)
+		torrent.update()
 		while(torrent.status=="checking"):
 			time.sleep(1)
-			torrent=self.tc.get_torrent(torrent.id)
+			torrent.update()
 		if(torrent.status=="seeding"):
 			torrent.stop()
 			print "Torrent stopped."
