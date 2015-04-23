@@ -5,19 +5,25 @@
 import os,re
 import subtitle_toolbox as st
 import transmission_toolbox as tt
+import configuration_manager as cm
 import time
 import sys
 import patoolib
+
+
+
+
 
 print "------------------------"
 print time.strftime("%c")
 print "------------------------"
 try:
+	conf=cm.Configuration_Manager()
 	sys.stdout.flush()
 	# Set the directory you want to start from
-	rootDir = '/home/pi/WD3/SeriesHD/_Downloads/'
-	outputDir = '/home/pi/WD3/SeriesHD/'
-	transmission = tt.Transmission_toolbox()
+	rootDir = conf.subtitles.input
+	outputDir = conf.subtitles.output
+	transmission = tt.Transmission_toolbox(conf.transmission)
 
 	#Loop control
 	loop=True

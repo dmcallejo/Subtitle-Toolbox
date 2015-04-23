@@ -11,71 +11,12 @@ import urllib2
 import re
 
 class Transmission_toolbox:
-	def __init__(self):
-		self.address="localhost"
-		self.port="9091"
-		self.login="pi"
-		self.password="raspberry"
+	def __init__(self,transmission_config):
+		self.address=transmission_config.address
+		self.port=transmission_config.port
+		self.login=transmission_config.login
+		self.password=transmission_config.password
 		self.connect()
-
-	def load_config(self):
-		config_loaded=False
-		try:
-			file = open(".transmission_settings.xml","r")
-			config_loaded=True
-
-		except IOError, e:
-			print "No settings file. Creating new settings."
-			create_config()
-		finally:
-			if not config_loaded:
-				file = open(".transmission_settings.xml","r")
-			config_file = ET.parse(file)
-			config =  config_file.getroot()
-			for e in config.iter():
-				if e.tag=="address":
-					self.address=e.text
-				elif e.tag=="port":
-					self.port=e.text
-				elif e.tag=="login":
-					self.login=e.text
-				elif e.tag=="password":
-					self.password=e.text
-
-	def create_config(self):
-		from sys import stdin
-		print "Type transmission client address without port [localhost]"
-		address = stdin.readline().strip()
-		print "Type transmission client port [9091]"
-		port = stdin.readline().strip()
-
-		if address=="":
-			address = "localhost"
-		if port=="":
-			port="9091"
-
-		print "Type transmission login username [default: None]"
-		login = stdin.readline().strip()
-		print "Type transmission password [default: None]"
-		password = stdin.readline().strip()
-
-		print "Creating configuration file..."
-		#Element tree structure:
-		transmission_root= ET.Element("transmission")
-		xml_address = ET.SubElement(transmission_root,"address")
-		xml_port	= ET.SubElement(transmission_root,"port")
-		xml_auth 	= ET.SubElement(transmission_root, "auth")
-		xml_login	= ET.SubElement(xml_auth,"login")
-		xml_password= ET.SubElement(xml_auth,"password")
-
-		# Write of data:
-		xml_address.text = address
-		xml_port.text 	 = port
-		xml_login.text	 = login
-		xml_password.text= password
-
-		tree = ET.ElementTree(transmission_root)
-		tree.write(".transmission_settings.xml")
 
 	def connect(self):
 		self.tc = transmissionrpc.Client(self.address, port=self.port,user=self.login,password=self.password)
