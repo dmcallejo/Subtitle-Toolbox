@@ -12,6 +12,7 @@ import re
 
 class Transmission_toolbox:
 	def __init__(self,transmission_config):
+		""" Constructor for the class. Needs a transmission config object. """
 		self.address=transmission_config.address
 		self.port=transmission_config.port
 		self.login=transmission_config.login
@@ -19,9 +20,11 @@ class Transmission_toolbox:
 		self.connect()
 
 	def connect(self):
+		""" Connects to the torrent server """
 		self.tc = transmissionrpc.Client(self.address, port=self.port,user=self.login,password=self.password)
 
 	def search_torrent_by_file(self,filename):
+		""" Finds a torrent containing the given filename """
 		for torrent in self.tc.get_torrents():
 			files = torrent.files()
 			for i in files:
@@ -29,6 +32,7 @@ class Transmission_toolbox:
 					return torrent
 
 	def remove_torrent(self,torrent):
+		""" Removes a torrent and its data """
 		tId = torrent.id
 		self.tc.remove_torrent(tId,delete_data=True)
 
@@ -63,6 +67,7 @@ class Transmission_toolbox:
 		print "Updating of every torrent's trackers done."
 
 	def update_torrent_trackers(self,t):
+		""" Find new trackers for a torrent and adds them.  """
 		current_trackers = []
 		for tr in t.trackers:
 			current_trackers.append(urlparse(str(tr['announce'])).netloc)  	# We save only the netloc of the tracker 
