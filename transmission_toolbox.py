@@ -31,6 +31,10 @@ class Transmission_toolbox:
 				if files[i]['name'] == filename:
 					return torrent
 
+	def get_torrents(self):
+		""" Proxy for transmissionrpc original function """
+		return self.tc.get_torrents()
+
 	def remove_torrent(self,torrent):
 		""" Removes a torrent and its data """
 		tId = torrent.id

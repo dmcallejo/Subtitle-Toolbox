@@ -15,7 +15,6 @@ import patoolib
 def main(argv):
 	try:
 		opts, args = getopt.getopt(argv,"htd",["directory","transmission"])
-		print opts,args
 	except getopt.GetoptError:
 		print 'library_manager.py -t OR library_manager.py -d'
 		sys.exit(2)
@@ -24,11 +23,12 @@ def main(argv):
 			print 'library_manager.py -t OR library_manager.py -d'
 			sys.exit()
 		elif opt in ("-t", "--transmission"):
-			print "Not implemented."
-			exit(0)
+			transmission_mode()
 		elif opt in ("-d", "--directory"):
 			directory_mode()
 			break;
+
+	get_transmission_toolbox().update_all_torrent_trackers()
 	exit(0)
 
 def flush():
@@ -44,15 +44,51 @@ def log_end():
 	print "------------------------"
 	flush()
 
+def get_configuration():
+	return cm.Configuration_Manager()
+
+def get_transmission_toolbox():
+	return tt.Transmission_toolbox(get_configuration().transmission)
+
+def is_valid_file(filename):
+	if (re.search('.rar$',filename,flags=re.IGNORECASE) or (re.search('.mkv$',filename,flags=re.IGNORECASE) and re.search('sample',filename,flags=re.IGNORECASE) == None)):
+		return True
+	else:
+		return False
+
+def is_a_tvshow(filename):
+	if (re.search('.mkv$',filename,flags=re.IGNORECASE) != None and (re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None or re.search('\.[0-9]{1,2}x[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None)):
+		return True
+	else:
+		return False
+
+def transmission_mode():
+	log_start()
+	transmission = get_transmission_toolbox()
+	torrents=transmission.get_torrents()
+	outputDir = get_configuration().subtitles.output
+	for t in torrents:
+		print t
+		if t.progress==100 and transmission.verify_and_stop(t)==0:
+			files = t.files()
+			for f in files:
+				if(is_valid_file(files[f]["name"])):
+					status = st.download_by_file(t.downloadDir+"/"+files[f]["name"],outputDir)
+					if (status == 0):
+						print "Deleting: ",t
+						transmission.remove_torrent(t)
+		print "\n"
+	log_end()
+
 def directory_mode():
 	log_start()
 	try:
-		conf=cm.Configuration_Manager()
-		sys.stdout.flush()
+		conf=get_configuration()
+		flush()
 		# Set the directory you want to start from
 		rootDir = conf.subtitles.input
 		outputDir = conf.subtitles.output
-		transmission = tt.Transmission_toolbox(conf.transmission)
+		transmission = get_transmission_toolbox()
 
 		#Loop control
 		loop=True
@@ -60,7 +96,7 @@ def directory_mode():
 			loop=False
 			for dirName, subdirList, fileList in os.walk(rootDir):
 				for fname in fileList:
-					if not (re.search('.rar$',fname,flags=re.IGNORECASE) or (re.search('.mkv$',fname,flags=re.IGNORECASE) and re.search('sample',fname,flags=re.IGNORECASE) == None)):
+					if not (is_valid_file(fname)):
 						continue
 
 					if dirName != rootDir:
@@ -84,8 +120,7 @@ def directory_mode():
 						print "WARNING: Script will restart to handle extracted files."
 						loop=True
 
-
-					elif re.search('.mkv$',fname,flags=re.IGNORECASE) != None and (re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None or re.search('\.[0-9]{1,2}x[0-9][0-9]\.',fname,flags=re.IGNORECASE)!=None) and re.search('sample',fname,flags=re.IGNORECASE) == None:
+					elif is_a_tvshow(fname):
 						flush()
 						status = st.download_by_file(dirName+"/"+fname,outputDir)
 						if (status == 0 and torrent!=None):
@@ -96,7 +131,6 @@ def directory_mode():
 							os.remove(dirName+"/"+fname)
 						print "\n"
 					flush()
-			transmission.update_all_torrent_trackers()
 	except Exception, e:
 		print "\nERROR"
 		print e
