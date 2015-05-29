@@ -61,15 +61,17 @@ def is_a_tvshow(filename):
 		return True
 	else:
 		return False
-
+def torrent_is_an_episode(torrent):
+	print torrent.name
+	return(re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',torrent.name,flags=re.IGNORECASE)!=None or re.search('\.[0-9]{1,2}x[0-9][0-9]\.',torrent.name,flags=re.IGNORECASE)!=None)
 def transmission_mode():
 	log_start()
 	transmission = get_transmission_toolbox()
 	torrents=transmission.get_torrents()
 	outputDir = get_configuration().subtitles.output
 	for t in torrents:
-		print t
-		if t.progress==100 and transmission.verify_and_stop(t)==0:
+		if t.progress==100 and transmission.verify_and_stop(t)==0 and torrent_is_an_episode(t):
+			print t
 			files = t.files()
 			for f in files:
 				if(is_valid_file(files[f]["name"])):
@@ -77,7 +79,7 @@ def transmission_mode():
 					if (status == 0):
 						print "Deleting: ",t
 						transmission.remove_torrent(t)
-		print "\n"
+			print "\n"
 	log_end()
 
 def directory_mode():
