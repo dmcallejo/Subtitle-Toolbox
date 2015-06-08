@@ -88,6 +88,7 @@ def download_by_file(video_file,output="../"):
 	if series!=None:
 		series=series.replace('.',' ')
 		series=series.replace('_',' ')
+		series=series.title()
 	else:
 		print "ERROR parsing getting series name from "+filename
 		return 1
