@@ -72,7 +72,9 @@ def download_by_file(video_file,output="../"):
 		series = re.search('.+(?=\.[Ss][0-9][0-9])',filename).group(0)
 		season = re.search('(?<=[Ss])[0-9]{1,2}(?=[Ee][0-9][0-9]\.)',filename).group(0)
 		episode = re.search('(?<=[Ss][0-9][0-9][Ee])[0-9][0-9]',filename).group(0)
-		info = re.search('(?<=\.[Ss][0-9][0-9][Ee][0-9][0-9]\.).+(?=\.mkv)',filename).group(0)
+		info = re.search('(?<=\.[Ss][0-9][0-9][Ee][0-9][0-9]\.).+(?=\.mkv)',filename)
+		if(info!=None):
+			info=info.group(0)
 	#
 	# Series.1x02.info.mkv case
 	#
@@ -80,7 +82,9 @@ def download_by_file(video_file,output="../"):
 		series = re.search('.+(?=\.[0-9]{1,2}[xX])',filename).group(0)
 		season = re.search('(?<=)[0-9]{1,2}(?=[xX][0-9][0-9]\.)',filename).group(0)
 		episode = re.search('(?<=[0-9][xX])[0-9][0-9]',filename).group(0)
-		info = re.search('(?<=\.[0-9][Xx][0-9][0-9]\.).+(?=\.mkv)',filename).group(0)
+		info = re.search('(?<=\.[0-9][Xx][0-9][0-9]\.).+(?=\.mkv)',filename)
+		if(info!=None):
+			info=info.group(0)
 	else:
 		print "ERROR parsing filename "+filename
 		return 1
