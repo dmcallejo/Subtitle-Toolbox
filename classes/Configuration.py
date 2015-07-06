@@ -15,3 +15,9 @@ class Subtitles_Config:
 		self.input=None
 		self.output=None
 		self.languages=[] #TODO: preferred languages
+
+class Account:
+	""" Stores username and password """
+	def __init__(self):
+		self.username=None
+		self.password=None
