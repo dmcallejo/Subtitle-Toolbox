@@ -11,7 +11,7 @@ import os
 XML FORMAT: 
 -----------
 
-<?xml version="1.0"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <configuration>
 	<transmission>
 		<address></address>
@@ -94,8 +94,10 @@ class Configuration_Manager:
 
 		print "Type transmission login username [default: None]"
 		login = stdin.readline().strip()
-		print "Type transmission password [default: None]"
-		password = getpass.getpass().strip()
+		if(login!=""):
+			password = getpass.getpass().strip()
+		else:
+			password=""
 
 		print "Type the input path for the subtitles modules (Where your series are being downloaded) "
 		while(True):
@@ -106,8 +108,8 @@ class Configuration_Manager:
 				print "Invalid directory. Please try again:"
 
 		print "Type the output path for the prepared MKVs"
-		subtitles_output = stdin.readline().strip()
 		while(True):
+			subtitles_output = stdin.readline().strip()
 			if(os.path.isdir(subtitles_output)):
 				break
 			else:
@@ -159,4 +161,4 @@ class Configuration_Manager:
 			xml_accounts_openSubtitles_pass.text  = os_password
 
 		tree = ET.ElementTree(configuration_root)
-		tree.write(".transmission_settings.xml",pretty_print=True,encoding='utf-8')
+		tree.write(".transmission_settings.xml",pretty_print=True,xml_declaration=True,encoding='utf-8')
