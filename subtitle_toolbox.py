@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sites.subtitulos_es
+import sites.openSubtitles
 import urllib2
 import sys,math,getopt,re
 import utils
@@ -138,7 +139,10 @@ def search(series,season,episode):
 	return sites.subtitulos_es.get_all_subtitles(series,season,episode)
 
 def test():
-	sites.subtitulos_es.get_all_subtitles("Banshee",3,1)
+	path = "/home/pi/WD3/SeriesHD/_Downloads"
+	filename = "Mr.Robot.S01E01.PROPER.720p.HDTV.X264-DIMENSION.mkv"
+	data = sites.openSubtitles.get_all_subtitles(path,filename)
+	sites.openSubtitles.download_subtitles(data,path,filename)
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

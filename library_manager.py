@@ -14,7 +14,7 @@ import patoolib
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv,"htd",["directory","transmission"])
+		opts, args = getopt.getopt(argv,"htd",["directory","transmission","test"])
 	except getopt.GetoptError:
 		print 'library_manager.py -t OR library_manager.py -d'
 		sys.exit(2)
@@ -22,6 +22,8 @@ def main(argv):
 		if opt == '-h':
 			print 'library_manager.py -t OR library_manager.py -d'
 			sys.exit()
+		elif opt in ("-test", "--test"):
+			test()
 		elif opt in ("-t", "--transmission"):
 			transmission_mode()
 		elif opt in ("-d", "--directory"):
@@ -55,6 +57,9 @@ def is_valid_file(filename):
 		return True
 	else:
 		return False
+
+def test():
+	st.test()
 
 def is_a_tvshow(filename):
 	if (re.search('.mkv$',filename,flags=re.IGNORECASE) != None and (re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None or re.search('\.[0-9]{1,2}x[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None)):
