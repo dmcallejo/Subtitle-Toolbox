@@ -48,7 +48,7 @@ def package_contents(package_name):
 		if module.endswith(MODULE_EXTENSIONS)])
 
 def download_file(url,file_name):
-	req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser",'Referer' : "http://www.subtitulos.es/"}) 
+	req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
 	u = urllib2.urlopen(req,timeout=10)
 	f = open(file_name, 'wb')
 	f.write(u.read())
