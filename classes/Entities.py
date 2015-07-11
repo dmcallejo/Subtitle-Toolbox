@@ -4,12 +4,24 @@
 class Subtitle:
 	""" Holds the url and language of a single subtitle. """
 
-	def __init__(self, language,url):
+	def __init__(self, language,url,encoding='UTF-8'):
 		self.language=language
 		self.url=url
+		self.encoding=encoding
 
 	def __str__(self):
 		return "Language: "+self.language+"\tURL: "+self.url+"\n"
+
+	def encoding():
+		doc = "The encoding property."
+		def fget(self):
+			return self._encoding
+		def fset(self, value):
+			self._encoding = value
+		def fdel(self):
+			del self._language
+		return locals()
+	encoding = property(**encoding())
 
 	def language():
 		doc = "The language property."
