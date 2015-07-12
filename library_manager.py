@@ -12,6 +12,8 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 import patoolib
 
+configuration = None
+
 def main(argv):
 	try:
 		opts, args = getopt.getopt(argv,"htd",["directory","transmission","test"])
@@ -47,7 +49,10 @@ def log_end():
 	flush()
 
 def get_configuration():
-	return cm.Configuration_Manager()
+	global configuration
+	if(configuration == None):
+		configuration = cm.Configuration_Manager()
+	return configuration
 
 def get_transmission_toolbox():
 	return tt.Transmission_toolbox(get_configuration().transmission)
