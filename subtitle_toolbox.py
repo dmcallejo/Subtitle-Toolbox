@@ -148,8 +148,10 @@ def search(series,season,episode):
 def test():
 	path = "/home/pi/WD3/SeriesHD/_Downloads"
 	filename = "Mr.Robot.S01E01.PROPER.720p.HDTV.X264-DIMENSION.mkv"
-	data = sites.openSubtitles.get_all_subtitles(path,filename)
-	sites.openSubtitles.download_subtitles(data,path,filename)
+	data = sites.openSubtitles.get_all_subtitles(path,filename,get_configuration().subtitles.languages)
+	print sites.openSubtitles.get_best_subtitle(data["eng"],filename)
+	print sites.openSubtitles.get_best_subtitle(data["spa"],filename)
+	#sites.openSubtitles.download_subtitles(data,path,filename)
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

@@ -6,17 +6,20 @@ from pythonopensubtitles.utils import File
 import configuration_manager as cm
 import utils
 import gzip
+import re
 
 os_client = OpenSubtitles()
 token = None
 
-def get_all_subtitles(path,filename):
+def get_all_subtitles(path,filename,languages=['all']):
 	if(token==None):
 		login()
 	f = File(os.path.join(path,filename))
 	hash = f.get_hash()
 	size = f.size
-	data = os_client.search_subtitles([{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
+	data = {}
+	for lang in languages:
+		data[lang] = os_client.search_subtitles([{'sublanguageid': lang, 'moviehash': hash, 'moviebytesize': size}])
 	return data
 
 def download_subtitles(subtitle_array,path,filename):
@@ -37,6 +40,31 @@ def download_subtitle(element,path,filename):
 	print "Downloaded",srt_file_path
 	os.remove(gz_file_path)
 
+
+
+def get_best_subtitle(data_array,filename):
+	match = get_filename_match(data_array,filename)
+	if(len(match)>1):
+		data_array = match
+	highest = get_best_rated(data_array)
+	return highest
+
+
+
+def get_filename_match(data_array,filename):
+	match = re.search('.+(?=\.mkv)',filename).group(0)
+	elements = []
+	for e in data_array:
+		if(e["MovieReleaseName"] == match):
+			elements.append(e)
+	return elements
+
+def get_best_rated(data_array):
+	highest = None
+	for e in data_array:
+		if(highest == None or float(e["SubRating"])>float(highest["SubRating"])):
+			highest = e
+	return highest
 
 
 # Login functions
