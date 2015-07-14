@@ -26,6 +26,7 @@ def main(argv):
 			sys.exit()
 		elif opt in ("-test", "--test"):
 			test()
+			sys.exit()
 		elif opt in ("-t", "--transmission"):
 			transmission_mode()
 		elif opt in ("-d", "--directory"):
@@ -52,6 +53,7 @@ def get_configuration():
 	global configuration
 	if(configuration == None):
 		configuration = cm.Configuration_Manager()
+		st.configuration = configuration
 	return configuration
 
 def get_transmission_toolbox():

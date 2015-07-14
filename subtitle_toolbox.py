@@ -3,6 +3,7 @@
 
 import sites.subtitulos_es
 import sites.openSubtitles
+import configuration_manager as cm
 import urllib2
 import sys,math,getopt,re
 import utils
@@ -13,6 +14,8 @@ from classes import *
 reload(sys)
 sys.setdefaultencoding('utf8')
 import string
+
+configuration = None
 
 def main(argv):
 	video_file = None
@@ -133,7 +136,11 @@ def download_by_file(video_file,output="../"):
 	shutil.rmtree('/tmp/subchecker/')
 	return result
 
-
+def get_configuration():
+	global configuration
+	if(configuration == None):
+		configuration = cm.Configuration_Manager()
+	return configuration
 
 def search(series,season,episode):
 	return sites.subtitulos_es.get_all_subtitles(series,season,episode)
