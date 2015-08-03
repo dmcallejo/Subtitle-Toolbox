@@ -91,17 +91,16 @@ class SubtitleRelease:
 class Episode:
 	""" Holds the subtitles (SubtitleRelease) from the several releases of an episode. """
 
-	def __init__(self,series=None,season=None,episode=None):
-		self._series=series
-		self._season=season
-		self._episode=episode
-		self._releases=[]
+	def __init__(self,series=None,season=None,episode=None,title=None,path=None,filename=None):
+		self.series=series
+		self.season=season
+		self.episode=episode
+		self.title=title
+		self.path=path
+		self.filename=filename
 
 	def __str__(self):
-		string = "Series: "+self.series+" "+"S"+self.season+"E"+self.episode
-		for release in self.releases:
-			string += str(release)
-
+		string = self.series+" S"+str(self.season).zfill(2)+"E"+str(self.episode).zfill(2)+" - "+self.title
 		return string
 
 	def series():
@@ -138,6 +137,16 @@ class Episode:
 		return locals()
 	episode = property(**episode())
 
+	def title():
+		doc = "The episode title."
+		def fget(self):
+			return self.title
+		def fset(self, value):
+			self.title = value
+		def fdel(self):
+			del self.title
+		return locals()
+	title = property(**title())
 
 	def releases():
 		doc = "The releases property."

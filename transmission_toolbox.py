@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import transmissionrpc
-import os,time
+import os,time,sys
 import xml.etree.cElementTree as ET
 #From update trackers:
 from bs4 import BeautifulSoup
@@ -47,6 +47,7 @@ class Transmission_toolbox:
 			return 0
 
 		print "Verifying torrent..."
+		sys.stdout.flush()
 		self.tc.verify_torrent(torrent.id)
 		time.sleep(2)
 		torrent.update()

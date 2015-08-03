@@ -19,7 +19,9 @@ def get_all_subtitles(path,filename,languages=['all']):
 	size = f.size
 	data = {}
 	for lang in languages:
-		data[lang] = os_client.search_subtitles([{'sublanguageid': lang, 'moviehash': hash, 'moviebytesize': size}])
+		result = os_client.search_subtitles([{'sublanguageid': lang, 'moviehash': hash, 'moviebytesize': size}])
+		if(result):
+			data[lang] = result
 	return data
 
 def download_subtitles(subtitle_array,path,filename):
@@ -27,7 +29,10 @@ def download_subtitles(subtitle_array,path,filename):
 		download_subtitle(e,path,filename)
 
 def download_subtitle(element,path,filename):
+	""" Downloads an openSubtitle subtitle and returns its path """
 	# Downloading
+	if re.search('.+(?=\.mkv)',filename):
+		filename=re.search('.+(?=\.mkv)',filename).group(0)
 	gz_file_path = os.path.join(path,element['SubFileName']+'.gz')
 	srt_file_path = os.path.join(path,filename)+'.'+element['SubLanguageID']+'.'+element['SubFormat']
 	utils.download_file(element['SubDownloadLink'],gz_file_path)
@@ -37,10 +42,23 @@ def download_subtitle(element,path,filename):
 	outF.write(inF.read())
 	inF.close()
 	outF.close()
-	print "Downloaded",srt_file_path
 	os.remove(gz_file_path)
+	return srt_file_path
 
-
+def get_episode_info(data,filename,path=None):
+	if(data==None and path!=None):
+		data = get_all_subtitles(path,filename,languages=["eng"])
+	if not data:
+		return None,None
+	if 'eng' in data:
+		data = data['eng']
+	if (len(data)>1):
+		data = get_best_subtitle(data,filename)
+	if isinstance(data,list):
+		data = data[0]
+	episode_name = data["MovieName"].rsplit("\"",1)[1].strip()
+	series_name = data["MovieName"].split("\"",2)[1].strip()
+	return series_name,episode_name
 
 def get_best_subtitle(data_array,filename):
 	match = get_filename_match(data_array,filename)
@@ -49,13 +67,11 @@ def get_best_subtitle(data_array,filename):
 	highest = get_best_rated(data_array)
 	return highest
 
-
-
 def get_filename_match(data_array,filename):
 	match = re.search('.+(?=\.mkv)',filename).group(0)
 	elements = []
 	for e in data_array:
-		if(e["MovieReleaseName"] == match):
+		if(utils.similar(e["MovieReleaseName"],match)>0.6):
 			elements.append(e)
 	return elements
 

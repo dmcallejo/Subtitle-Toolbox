@@ -69,6 +69,40 @@ def download_by_file(video_file,output="../"):
 		path=""
 		filename=video_file
 
+	series,season,episode_number,info = parse_filename(filename)
+	series,episode_name = sites.openSubtitles.get_episode_info(None,filename,path)
+
+	if episode_name is None:
+		print "Error fetching subtitles: No subtitle found."
+		return 1
+	episode = Episode(series,season,episode_number,episode_name,path,filename)
+
+	results = search(episode)
+	check_languages(results,filename)
+	print "Processing: ",episode
+	
+	subtitle_args = []
+	tmp_path="/tmp/subchecker/"
+	if not os.path.exists(tmp_path):
+		os.makedirs("/tmp/subchecker/")
+
+	for lang in get_configuration().subtitles.languages:
+		data = results[lang]
+		srt_file = sites.openSubtitles.download_subtitle(data,tmp_path,filename)
+		subtitle_args +=("--sub-charset", "0:"+data["SubEncoding"], "--language", "0:"+lang, "--track-name", "0:\""+iso6392.get_string(lang)+"\"",srt_file)
+	
+	#mkvmerge operations
+	result = -1
+	
+	output+="/"+episode.series+"/"+episode.series+" S"+str(season).zfill(2)
+	sys.stdout.flush()
+	mkvmerge_args = ["mkvmerge","-o", output+"/"+str(episode)+".mkv", "--title", "\""+str(episode)+"\"", "--language", "1:eng", "--track-name", "1:English", path.replace("\\","")+"/"+filename]+subtitle_args
+	
+	result = call(mkvmerge_args)
+	shutil.rmtree(tmp_path)
+	return result
+
+def parse_filename(filename):
 	#
 	# Series.S01.E02.info.mkv case
 	#
@@ -90,51 +124,15 @@ def download_by_file(video_file,output="../"):
 		if(info!=None):
 			info=info.group(0)
 	else:
-		print "ERROR parsing filename "+filename
-		return 1
+		raise Exception("ERROR parsing filename "+filename)
 
 	if series!=None:
 		series=series.replace('.',' ')
 		series=series.replace('_',' ')
 		series=series.title()
 	else:
-		print "ERROR parsing getting series name from "+filename
-		return 1
-
-	episode_name = sites.subtitulos_es.get_episode_name(series,season,episode)
-	if episode_name is None:
-		print "Error fetching subtitles"
-		return 1
-	episode_subtitles = Episode(series=series,season=season,episode=episode)
-
-	episode_subtitles.releases=search(series,season,episode)
-	print series+" - "+episode_name
-
-	subtitle_args = []
-	if not os.path.exists("/tmp/subchecker/"):
-		os.makedirs("/tmp/subchecker/")
-
-	for idx,release in enumerate(episode_subtitles.releases):
-		for idy,subtitle in enumerate(release.subtitles):
-			sub_filename = "/tmp/subchecker/"+filename[:-3]+subtitle.language+str(idx)+str(idy)+".srt"
-			print "\t>"+str(subtitle).strip()
-			utils.download_file(subtitle.url,sub_filename)
-			subtitle_args +=("--sub-charset", "0:UTF-8", "--language", "0:"+subtitle.language, "--track-name", "0:\""+iso6392.get_string(subtitle.language)+"\"",sub_filename)
-
-	if not "0:spa" in subtitle_args:
-		shutil.rmtree('/tmp/subchecker/')
-		return 1
-
-	
-	title = format_filename(series+" S"+str(season).zfill(2)+"E"+str(episode).zfill(2)+" - "+episode_name)
-	
-	output+="/"+series+"/"+series+" S"+str(season).zfill(2)
-	mkvmerge_args = ["mkvmerge","-o", output+"/"+title+".mkv", "--title", "\""+title+"\"", "--language", "1:eng", "--track-name", "1:English", path.replace("\\","")+"/"+filename]+subtitle_args
-	
-	result = call(mkvmerge_args)
-
-	shutil.rmtree('/tmp/subchecker/')
-	return result
+		raise Exception("ERROR getting series name from "+filename)
+	return series,season,episode,info
 
 def get_configuration():
 	global configuration
@@ -142,15 +140,27 @@ def get_configuration():
 		configuration = cm.Configuration_Manager()
 	return configuration
 
-def search(series,season,episode):
-	return sites.subtitulos_es.get_all_subtitles(series,season,episode)
+def search(episode):
+	languages = get_configuration().subtitles.languages
+	return sites.openSubtitles.get_all_subtitles(episode.path,episode.filename,languages)
+
+def check_languages(search_results,filename):
+	""" Checks for every language in the configuration and picks only one of them """
+	languages = get_configuration().subtitles.languages
+	for lang in languages:
+		if lang not in search_results:
+			raise Exception("Missing "+lang+" ("+iso6392.get_string(lang)+") subtitle")
+		else:
+			search_results[lang]=sites.openSubtitles.get_best_subtitle(search_results[lang],filename)
+
 
 def test():
 	path = "/home/pi/WD3/SeriesHD/_Downloads"
 	filename = "Mr.Robot.S01E01.PROPER.720p.HDTV.X264-DIMENSION.mkv"
 	data = sites.openSubtitles.get_all_subtitles(path,filename,get_configuration().subtitles.languages)
-	print sites.openSubtitles.get_best_subtitle(data["eng"],filename)
-	print sites.openSubtitles.get_best_subtitle(data["spa"],filename)
+	print sites.openSubtitles.get_episode_info(data,filename)
+	#print sites.openSubtitles.get_best_subtitle(data["eng"],filename)
+	#print sites.openSubtitles.get_best_subtitle(data["spa"],filename)
 	#sites.openSubtitles.download_subtitles(data,path,filename)
 
 if __name__ == "__main__":

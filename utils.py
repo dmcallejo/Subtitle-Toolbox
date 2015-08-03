@@ -5,6 +5,8 @@ import urllib2
 import imp
 import os
 from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
+
 
 def get_page_from_URL(url,debug=False):
 	try:
@@ -31,9 +33,9 @@ def get_soup_from_URL(url,debug=False):
 	else:
 		return None
 
-def parse_tvseries_filename(file_name):
-	""" TODO """
-	pass
+
+def similar(a, b):
+	return SequenceMatcher(None, a, b).ratio()
 
 
 MODULE_EXTENSIONS = ('.py', '.pyc', '.pyo')
