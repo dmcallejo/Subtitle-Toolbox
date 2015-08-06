@@ -89,6 +89,9 @@ def download_by_file(video_file,output="../"):
 	for lang in get_configuration().subtitles.languages:
 		data = results[lang]
 		srt_file = sites.openSubtitles.download_subtitle(data,tmp_path,filename)
+		if not "SubEncoding" in data or data["SubEncoding"] == '':
+			print "No SubEncoding field found for",lang,". Enforcing utf-8"
+			data["SubEncoding"] = "utf-8"
 		subtitle_args +=("--sub-charset", "0:"+data["SubEncoding"], "--language", "0:"+lang, "--track-name", "0:\""+iso6392.get_string(lang)+"\"",srt_file)
 	
 	#mkvmerge operations
