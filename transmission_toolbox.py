@@ -53,7 +53,10 @@ class Transmission_toolbox:
 		torrent.update()
 		while(torrent.status=="checking"):
 			time.sleep(1)
-			torrent.update()
+			try:
+				torrent.update()
+			except Exception, e:
+				pass
 		if(torrent.status=="seeding"):
 			torrent.stop()
 			print "Torrent stopped."
