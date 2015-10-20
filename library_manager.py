@@ -33,7 +33,7 @@ def main(argv):
 			directory_mode()
 			break;
 
-	#get_transmission_toolbox().update_all_torrent_trackers()
+	get_transmission_toolbox().update_all_torrent_trackers()
 	exit(0)
 
 def flush():
