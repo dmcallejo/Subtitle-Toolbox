@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from urlparse import urlparse
 import urllib2
 import re
+import utils
 
 class Transmission_toolbox:
 	def __init__(self,transmission_config):
@@ -45,7 +46,9 @@ class Transmission_toolbox:
 		""" Checks if downloaded data is valid through transmission's own verify data and stops the torrent. Does nothing if already stopped. """
 		if (torrent.status=="stopped"):
 			return 0
-
+		if(torrent.status=="checking"):
+			print "Torrent already verifying. Aborting script."
+			sys.exit(1);
 		print "Verifying torrent..."
 		sys.stdout.flush()
 		self.tc.verify_torrent(torrent.id)
@@ -93,16 +96,15 @@ class Transmission_toolbox:
 def get_torrent_trackers(t):
 	""" Obtains a list of trackers from the torrentz website. """
 	#Getting torrentz page
-	try:
-		response = urllib2.urlopen("http://torrentz.eu/"+t.hashString,timeout=30)
-	except urllib2.URLError, e:
+	url = "http://torrentz.eu/"+t.hashString
+	page = utils.get_page_from_URL(url)
+	if(page==None):
 		print "Torrentz.eu offline. Aborting..."
-		print e
 		exit()
-	soup = BeautifulSoup(response.read())
+	soup = BeautifulSoup(page)
 	for tag in soup.find_all(href=re.compile("announce"),limit=1):
-		response = urllib2.urlopen("http://torrentz.eu"+tag.get("href"))
-		trackers = parse_uTorrent_trackers(response.read())
+		page = utils.get_page_from_URL("http://torrentz.eu"+tag.get("href"))
+		trackers = parse_uTorrent_trackers(page)
 		trackers = correct_tracker_urls(trackers)
 		return trackers
 
