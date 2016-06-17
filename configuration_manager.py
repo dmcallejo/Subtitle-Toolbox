@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 from lxml import etree as ET
@@ -54,8 +54,8 @@ class Configuration_Manager:
 		try:
 			file = open(".transmission_settings.xml","r")
 			self.config_loaded=True
-		except IOError, e:
-			print "No settings file. Creating new settings."
+		except IOError as e:
+			print("No settings file. Creating new settings.")
 			self.create_config()
 		finally:
 			if not config_loaded:
@@ -86,17 +86,17 @@ class Configuration_Manager:
 				elif e.tag=="password" and e.getparent().tag=="openSubtitles":
 					self.openSubtitles.password=e.text
 		except e:
-			print e;
-			print "Malformed Configuraton. See above..."
+			print(e)
+			print("Malformed Configuraton. See above...")
 			exit(1)
 
 
 
 	def create_config(self):
 		from sys import stdin
-		print "Type transmission client address without port [localhost]"
+		print("Type transmission client address without port [localhost]")
 		address = stdin.readline().strip()
-		print "Type transmission client port [9091]"
+		print("Type transmission client port [9091]")
 		port = stdin.readline().strip()
 
 		if address=="":
@@ -104,30 +104,30 @@ class Configuration_Manager:
 		if port=="":
 			port="9091"
 
-		print "Type transmission login username [default: None]"
+		print("Type transmission login username [default: None]")
 		login = stdin.readline().strip()
 		if(login!=""):
 			password = getpass.getpass().strip()
 		else:
 			password=""
 
-		print "Type the input path for the subtitles modules (Where your series are being downloaded) "
+		print("Type the input path for the subtitles modules (Where your series are being downloaded) ")
 		while(True):
 			subtitles_input = stdin.readline().strip()
 			if(os.path.isdir(subtitles_input)):
 				break
 			else:
-				print "Invalid directory. Please try again:"
+				print("Invalid directory. Please try again:")
 
-		print "Type the output path for the prepared MKVs"
+		print("Type the output path for the prepared MKVs")
 		while(True):
 			subtitles_output = stdin.readline().strip()
 			if(os.path.isdir(subtitles_output)):
 				break
 			else:
-				print "Invalid directory. Please try again:"
+				print("Invalid directory. Please try again:")
 
-		print "Type the languages the subtitles module should download sepparated by comas. Example: eng,spa,ita. [default: eng]"
+		print("Type the languages the subtitles module should download sepparated by comas. Example: eng,spa,ita. [default: eng]")
 		while(True):
 			languages = stdin.readline().strip()
 			tmp = None
@@ -139,23 +139,23 @@ class Configuration_Manager:
 					raise Exception("Invalid input")
 			except Exception as e:
 				tmp = None
-				print e
-				print "Invalid input. Try again... Example: eng,spa,ita"
+				print(e)
+				print("Invalid input. Try again... Example: eng,spa,ita")
 			if(tmp!=None):
-				print " - Selected languages: "
+				print(" - Selected languages: ")
 				for e in tmp:
-					print " > ",iso6392.get_string(e)
+					print(" > ",iso6392.get_string(e))
 				break
 
 
-		print "Type your OpenSubtitles account name [default: No account]"
+		print("Type your OpenSubtitles account name [default: No account]")
 		os_user = stdin.readline().strip()
 		if(os_user!=""):
 			os_password = getpass.getpass().strip()
 
 
 
-		print "Creating configuration file..."
+		print("Creating configuration file...")
 		#Element tree structure:
 		configuration_root = ET.Element("configuration")
 		xml_transmission 				= ET.SubElement(configuration_root,"transmission")
@@ -200,13 +200,13 @@ class Configuration_Manager:
 	def parse_languages(self,languages):
 		""" Parses a languages string sepparated by comas """
 		if(languages==None):
-			print "No languages found"
+			print("No languages found")
 			return False
 		parsed = []
 		languages_list = languages.split(',')
 		for e in languages_list:
 			if(iso6392.get_string(e.strip())==None):
-				print "Unrecognized language:",e
+				print("Unrecognized language:",e)
 				raise Exception("Unrecognized language:",e)
 			parsed.append(e.strip())
 		return parsed

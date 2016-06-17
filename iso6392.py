@@ -4833,11 +4833,11 @@ iso6392 = {
 
 def get_iso6392(string):
 	for e in iso6392.items():
-		if e[1]['english'].decode('utf-8').lower()==string.decode('utf-8').lower():
+		if e[1]['english'].lower()==string.lower():
 			return e[0];
 def get_string(iso):
 	for e in iso6392.items():
-		if e[0].decode('utf-8').lower()==iso.decode('utf-8').lower():
+		if e[0].lower()==iso.lower():
 			return e[1]['english'];
 def test():
 	for e in iso6392.items():

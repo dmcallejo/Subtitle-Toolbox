@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import transmissionrpc
@@ -6,8 +6,7 @@ import os,time,sys
 import xml.etree.cElementTree as ET
 #From update trackers:
 from bs4 import BeautifulSoup
-from urlparse import urlparse
-import urllib2
+from urllib.parse import urlparse
 import re
 import utils
 
@@ -47,9 +46,9 @@ class Transmission_toolbox:
 		if (torrent.status=="stopped"):
 			return 0
 		if(torrent.status=="checking"):
-			print "Torrent already verifying. Aborting script."
+			print("Torrent already verifying. Aborting script.")
 			sys.exit(1);
-		print "Verifying torrent..."
+		print("Verifying torrent...")
 		sys.stdout.flush()
 		self.tc.verify_torrent(torrent.id)
 		time.sleep(2)
@@ -58,30 +57,33 @@ class Transmission_toolbox:
 			time.sleep(1)
 			try:
 				torrent.update()
-			except Exception, e:
+			except Exception as e:
 				pass
 		if(torrent.status=="seeding"):
 			torrent.stop()
-			print "Torrent stopped."
+			print("Torrent stopped.")
 			return 0
 		else:
-			print "Corrupted torrent."
+			print("Corrupted torrent.")
 			return 1
 
 	def update_all_torrent_trackers(self, ignore_stopped=False):
 		""" Goes through every torrent in transmission's list and updates its trackers """
-		print "Updating every torrent's trackers..."
+		print("Updating every torrent's trackers...")
 		torrent_list = self.tc.get_torrents()
 		for t in torrent_list:
 			#For each torrent in the list.	
 			self.update_torrent_trackers(t)
-		print "Updating of every torrent's trackers done."
+		print("Updating of every torrent's trackers done.")
 
 	def update_torrent_trackers(self,t):
 		""" Find new trackers for a torrent and adds them.  """
 		current_trackers = []
 		for tr in t.trackers:
-			current_trackers.append(urlparse(str(tr['announce'])).netloc)  	# We save only the netloc of the tracker 
+			tracker = str(tr['announce'])
+			parsed_url = urlparse(tracker)
+			netloc = parsed_url.netloc
+			current_trackers.append(netloc)  	# We save only the netloc of the tracker 
 																			#to compare with the new trackers.
 		trackers = get_torrent_trackers(t)
 		# Then we compare the current trackers against the ones in torrentz.eu
@@ -91,7 +93,7 @@ class Transmission_toolbox:
 		# And update the torrent in transmission:
 		if len(new_trackers)>0:
 			self.tc.change_torrent(t.id,trackerAdd=new_trackers)
-			print t,". Added "+str(len(new_trackers))+" tracker(s)."
+			print(t,". Added "+str(len(new_trackers))+" tracker(s).")
 
 def get_torrent_trackers(t):
 	""" Obtains a list of trackers from the torrentz website. """
@@ -99,9 +101,9 @@ def get_torrent_trackers(t):
 	url = "http://torrentz.eu/"+t.hashString
 	page = utils.get_page_from_URL(url)
 	if(page==None):
-		print "Torrentz.eu offline. Aborting..."
+		print("Torrentz.eu offline. Aborting...")
 		exit()
-	soup = BeautifulSoup(page)
+	soup = BeautifulSoup(page,'lxml')
 	for tag in soup.find_all(href=re.compile("announce"),limit=1):
 		page = utils.get_page_from_URL("http://torrentz.eu"+tag.get("href"))
 		trackers = parse_uTorrent_trackers(page)

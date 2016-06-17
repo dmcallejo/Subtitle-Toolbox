@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import urllib2
+import urllib.request
 import imp
 import os
 from bs4 import BeautifulSoup
@@ -10,21 +10,21 @@ from difflib import SequenceMatcher
 
 def get_page_from_URL(url,debug=False):
 	try:
-		req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
-		response = urllib2.urlopen(req,timeout=10)
-	except urllib2.URLError, e:
-		print "Error getting ",url
-		print e
+		req = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"}) 
+		response = urllib.request.urlopen(req,timeout=10)
+	except urllib.URLError as e:
+		print("Error getting ",url)
+		print(e)
 		return None
 	if(debug):
-		print "DEBUG: ",response
-	return response.read()
+		print("DEBUG: ",response)
+	return response.read().decode('utf-8')
 
 def sanitize_show_name(show,debug=False):
 	show = show.replace(" ","-")
 	show = show.strip()
 	if(debug):
-		print "DEBUG: Sanitized show name: ",show
+		print("DEBUG: Sanitized show name: ",show)
 
 def get_soup_from_URL(url,debug=False):
 	response = get_page_from_URL(url,debug=False)
@@ -50,20 +50,20 @@ def package_contents(package_name):
 		if module.endswith(MODULE_EXTENSIONS)])
 
 def download_file(url,file_name):
-	req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
-	u = urllib2.urlopen(req,timeout=10)
+	req = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"}) 
+	u = urllib.request.urlopen(req,timeout=10)
 	f = open(file_name, 'wb')
 	f.write(u.read())
 	f.close()
 
 
 def download_file_adv(url,file_name):
-	req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"}) 
-	u = urllib2.urlopen(req,timeout=10)
+	req = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"}) 
+	u = urllib2.request.urlopen(req,timeout=10)
 	f = open(file_name, 'wb')
 	meta = u.info()
 	file_size = int(meta.getheaders("Content-Length")[0])
-	print "Downloading: %s Bytes: %s" % (file_name, file_size)
+	print("Downloading: %s Bytes: %s" % (file_name, file_size))
 
 	file_size_dl = 0
 	block_sz = 8192
@@ -76,6 +76,6 @@ def download_file_adv(url,file_name):
 		f.write(buffer)
 		status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
 		status = status + chr(8)*(len(status)+1)
-		print status,
+		print(status,)
 
 	f.close()

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
 # Import the os module, for the os.walk function
@@ -8,8 +8,6 @@ import transmission_toolbox as tt
 import configuration_manager as cm
 import time
 import sys,getopt
-reload(sys)
-sys.setdefaultencoding('utf8')
 import patoolib
 
 configuration = None
@@ -18,11 +16,11 @@ def main(argv):
 	try:
 		opts, args = getopt.getopt(argv,"htd",["directory","transmission","test"])
 	except getopt.GetoptError:
-		print 'library_manager.py -t OR library_manager.py -d'
+		print('library_manager.py -t OR library_manager.py -d')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'library_manager.py -t OR library_manager.py -d'
+			print('library_manager.py -t OR library_manager.py -d')
 			sys.exit()
 		elif opt in ("-test", "--test"):
 			test()
@@ -39,14 +37,14 @@ def main(argv):
 def flush():
 	sys.stdout.flush()
 def log_start():
-	print "------------------------"
-	print time.strftime("%c")
-	print "------------------------"
+	print("------------------------")
+	print(time.strftime("%c"))
+	print("------------------------")
 	flush()
 def log_end():
-	print "------------------------"
-	print time.strftime("%c")
-	print "------------------------"
+	print("------------------------")
+	print(time.strftime("%c"))
+	print("------------------------")
 	flush()
 
 def get_configuration():
@@ -82,7 +80,7 @@ def transmission_mode():
 	torrents=transmission.get_torrents()
 	outputDir = get_configuration().subtitles.output
 	for t in torrents:
-		print t
+		print(t)
 		if t.progress==100 and transmission.verify_and_stop(t)==0 and torrent_is_an_episode(t):
 			files = t.files()
 			for f in files:
@@ -90,10 +88,10 @@ def transmission_mode():
 					status = None
 					try:
 						status = st.download_by_file(t.downloadDir+"/"+files[f]["name"],outputDir)
-					except Exception, e:
-						print "\t",e
+					except Exception as e:
+						print("\t",e)
 					if (status == 0):
-						print "Deleting:",t
+						print("Deleting:",t)
 						transmission.remove_torrent(t)
 		print
 	log_end()
@@ -123,35 +121,35 @@ def directory_mode():
 						query=fname
 					torrent = transmission.search_torrent_by_file(query)
 					
-					print query
+					print(query)
 
 					if torrent==None:
-						print "/!\\Torrent not found."
+						print("/!\\Torrent not found.")
 					else:
 						if (torrent.progress!=100 or transmission.verify_and_stop(torrent)!=0):
 							continue
 
 					if re.search('.rar$',fname,flags=re.IGNORECASE):
-						print "Decompressing rar file:",fname
+						print("Decompressing rar file:",fname)
 						patoolib.extract_archive(dirName+"/"+fname, outdir=rootDir)
 						transmission.remove_torrent(torrent)
-						print "WARNING: Script will restart to handle extracted files."
+						print("WARNING: Script will restart to handle extracted files.")
 						loop=True
 
 					elif is_a_tvshow(fname):
 						flush()
 						status = st.download_by_file(dirName+"/"+fname,outputDir)
 						if (status == 0 and torrent!=None):
-							print "Deleting: ",torrent
+							print("Deleting: ",torrent)
 							transmission.remove_torrent(torrent)
 						elif (status == 0 and torrent==None):
-							print "Deleting file:",dirName+"/"+fname
+							print("Deleting file:",dirName+"/"+fname)
 							os.remove(dirName+"/"+fname)
-						print "\n"
+						print("\n")
 					flush()
-	except Exception, e:
-		print "\nERROR"
-		print e
+	except Exception as e:
+		print("\nERROR")
+		print(e)
 	finally:
 		log_end()
 

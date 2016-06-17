@@ -1,18 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sites.subtitulos_es
 import sites.openSubtitles
 import configuration_manager as cm
-import urllib2
-import sys,math,getopt,re
+import math,getopt,re
 import utils
 import iso6392
 import shutil,os
 from subprocess import call
 from classes import *
-reload(sys)
-sys.setdefaultencoding('utf8')
 import string
 
 configuration = None
@@ -25,11 +22,11 @@ def main(argv):
 	try:
 		opts, args = getopt.getopt(argv,"hf:t:s:e:o:",["test","tvseries=","season=","episode=","file="])
 	except getopt.GetoptError:
-		print 'subtitle_toolbox.py -t <tv-series> -s <season> -e <episode>'
+		print('subtitle_toolbox.py -t <tv-series> -s <season> -e <episode>')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'subtitle_toolbox.py -t <tv-series> -s <season> -e <episode>'
+			print('subtitle_toolbox.py -t <tv-series> -s <season> -e <episode>')
 			sys.exit()
 		elif opt in ("-f", "--file"):
 			video_file=arg.strip()
@@ -49,13 +46,13 @@ def main(argv):
 		download_by_file(video_file)
 		exit(0)
 	if(tvseries==None):
-		print "No series specified."
+		print("No series specified.")
 		sys.exit(2)
 	elif(season==None or math.isnan(season)):
-		print "No season specified."
+		print("No season specified.")
 		sys.exit(2)
 	elif(episode==None or math.isnan(episode)):
-		print "No season specified."
+		print("No season specified.")
 		sys.exit(2)
 
 	sites.subtitulos_es.get_all_subtitles(tvseries,season,episode)
@@ -73,13 +70,13 @@ def download_by_file(video_file,output="../"):
 	series,episode_name = sites.openSubtitles.get_episode_info(None,filename,path)
 
 	if episode_name is None:
-		print "Error fetching subtitles: No subtitle found."
+		print("Error fetching subtitles: No subtitle found.")
 		return 1
 	episode = Episode(series,season,episode_number,episode_name,path,filename)
 
 	results = search(episode)
 	check_languages(results,filename)
-	print "Processing: ",episode
+	print("Processing: ",episode)
 	
 	subtitle_args = []
 	tmp_path="/tmp/subchecker/"
@@ -90,7 +87,7 @@ def download_by_file(video_file,output="../"):
 		data = results[lang]
 		srt_file = sites.openSubtitles.download_subtitle(data,tmp_path,filename)
 		if not "SubEncoding" in data or data["SubEncoding"] == '':
-			print "No SubEncoding field found for",lang,". Enforcing utf-8"
+			print("No SubEncoding field found for",lang,". Enforcing utf-8")
 			data["SubEncoding"] = "utf-8"
 		subtitle_args +=("--sub-charset", "0:"+data["SubEncoding"], "--language", "0:"+lang, "--track-name", "0:\""+iso6392.get_string(lang)+"\"",srt_file)
 	
@@ -161,9 +158,9 @@ def test():
 	path = "/home/pi/WD3/SeriesHD/_Downloads"
 	filename = "Mr.Robot.S01E01.PROPER.720p.HDTV.X264-DIMENSION.mkv"
 	data = sites.openSubtitles.get_all_subtitles(path,filename,get_configuration().subtitles.languages)
-	print sites.openSubtitles.get_episode_info(data,filename)
-	#print sites.openSubtitles.get_best_subtitle(data["eng"],filename)
-	#print sites.openSubtitles.get_best_subtitle(data["spa"],filename)
+	print(sites.openSubtitles.get_episode_info(data,filename))
+	#print(sites.openSubtitles.get_best_subtitle(data["eng"],filename))
+	#print(sites.openSubtitles.get_best_subtitle(data["spa"],filename))
 	#sites.openSubtitles.download_subtitles(data,path,filename)
 
 if __name__ == "__main__":

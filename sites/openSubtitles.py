@@ -88,7 +88,7 @@ def get_best_rated(data_array):
 def login():
 	configuration_manager=cm.Configuration_Manager()
 	token = os_client.login(configuration_manager.openSubtitles.username, configuration_manager.openSubtitles.password)
-	print "Logged in."
+	print("Logged in.")
 
 def logout():
 	os_client.logout()
