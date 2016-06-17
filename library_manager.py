@@ -80,7 +80,7 @@ def transmission_mode():
 	torrents=transmission.get_torrents()
 	outputDir = get_configuration().subtitles.output
 	for t in torrents:
-		print(t)
+		print("Torrent",t.name)
 		if t.progress==100 and transmission.verify_and_stop(t)==0 and torrent_is_an_episode(t):
 			files = t.files()
 			for f in files:
