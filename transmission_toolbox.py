@@ -93,7 +93,7 @@ class Transmission_toolbox:
 		# And update the torrent in transmission:
 		if len(new_trackers)>0:
 			self.tc.change_torrent(t.id,trackerAdd=new_trackers)
-			print(t,". Added "+str(len(new_trackers))+" tracker(s).")
+			print("Torrent",t.name,". Added "+str(len(new_trackers))+" tracker(s).")
 
 def get_torrent_trackers(t):
 	""" Obtains a list of trackers from the torrentz website. """
