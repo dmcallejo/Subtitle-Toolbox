@@ -3,6 +3,7 @@
 import os
 from pythonopensubtitles.opensubtitles import OpenSubtitles
 from pythonopensubtitles.utils import File
+from pythonopensubtitles.utils import get_md5
 import configuration_manager as cm
 import utils
 import gzip
@@ -82,6 +83,23 @@ def get_best_rated(data_array):
 			highest = e
 	return highest
 
+
+# Upload functions
+
+def upload_subtitles(subtitle_files,movie_file):
+	f = File(movie_file)
+	movie_hash = f.get_hash()
+	movie_size = f.size
+	for subtitle in subtitle_files:
+		subtitle_md5 = get_md5(subtitle)
+		assert type(subtitle_md5) == str
+		params = [{'cd1': [{'submd5hash': subtitle_md5,
+                  'subfilename': subtitle,
+                  'moviehash': movie_hash,
+                  'moviebytesize': movie_size}]}]
+		already_in_db = os_client.try_upload_subtitles(params)
+		assert type(already_in_db) == bool
+		print(already_in_db)
 
 # Login functions
 

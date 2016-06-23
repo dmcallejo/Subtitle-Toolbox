@@ -57,8 +57,14 @@ def get_configuration():
 def get_transmission_toolbox():
 	return tt.Transmission_toolbox(get_configuration().transmission)
 
-def is_valid_file(filename):
+def is_valid_video_file(filename):
 	if (re.search('.rar$',filename,flags=re.IGNORECASE) or (re.search('.mkv$',filename,flags=re.IGNORECASE) and re.search('sample',filename,flags=re.IGNORECASE) == None)):
+		return True
+	else:
+		return False
+
+def is_valid_subtitle_file(filename):
+	if (re.search('.srt$',filename,flags=re.IGNORECASE)):
 		return True
 	else:
 		return False
@@ -83,16 +89,27 @@ def transmission_mode():
 		print("Torrent",t.name)
 		if t.progress==100 and transmission.verify_and_stop(t)==0 and torrent_is_an_episode(t):
 			files = t.files()
+			video_file = None
+			subtitle_files = []
+			# Video files and subtitle files lookup
 			for f in files:
-				if(is_valid_file(files[f]["name"])):
-					status = None
-					try:
-						status = st.download_by_file(t.downloadDir+"/"+files[f]["name"],outputDir)
-					except Exception as e:
-						print("\t",e)
-					if (status == 0):
-						print("Deleting:",t)
-						transmission.remove_torrent(t)
+				if(is_valid_video_file(files[f]["name"])):
+					video_file = t.downloadDir+"/"+files[f]["name"]
+				if(is_valid_subtitle_file(files[f]["name"])):
+					subtitle_files.append(t.downloadDir+"/"+files[f]["name"])
+			# TODO: check if subtitle file is already uploaded, upload it if not. Merge it into the file.
+			if(len(subtitle_files)>0 and video_file != None):
+				st.upload_subtitles(subtitle_files,video_file)
+
+			if(video_file != None):
+				status = None
+				try:
+					status = st.download_by_file(video_file,outputDir)
+				except Exception as e:
+					print("\t",e)
+				if (status == 0):
+					print("Deleting:",t)
+					transmission.remove_torrent(t)
 		print
 	log_end()
 

@@ -58,6 +58,8 @@ def main(argv):
 	sites.subtitulos_es.get_all_subtitles(tvseries,season,episode)
 	exit(0)
 
+def upload_subtitles(subtitle_files,movie_file):
+	sites.openSubtitles.upload_subtitles(subtitle_files,movie_file)
 
 def download_by_file(video_file,output="../"):
 	if(video_file.rfind("/")!=-1):
