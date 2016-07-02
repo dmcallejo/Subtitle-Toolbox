@@ -3,6 +3,7 @@
 
 import sites.subtitulos_es
 import sites.openSubtitles
+import sites.tvdb
 import configuration_manager as cm
 import math,getopt,re
 import utils
@@ -69,6 +70,9 @@ def download_by_file(video_file,output="../"):
 		filename=video_file
 
 	series,season,episode_number,info = parse_filename(filename)
+	tvdb = sites.tvdb.tvdb()
+	tvdb.get_info(series,season,episode_number)
+	
 	series,episode_name = sites.openSubtitles.get_episode_info(None,filename,path)
 
 	if episode_name is None:
@@ -127,7 +131,6 @@ def parse_filename(filename):
 			info=info.group(0)
 	else:
 		raise Exception("ERROR parsing filename "+filename)
-
 	if series!=None:
 		series=series.replace('.',' ')
 		series=series.replace('_',' ')
