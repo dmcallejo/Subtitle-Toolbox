@@ -112,6 +112,8 @@ def parse_filename(filename):
 	#
 	# Series.S01.E02.info.mkv case
 	#
+	if(filename.count('/')>0):
+		filename = filename.rsplit('/',maxsplit=1)[1]
 	if(re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None): 
 		series = re.search('.+(?=\.[Ss][0-9][0-9])',filename).group(0)
 		season = re.search('(?<=[Ss])[0-9]{1,2}(?=[Ee][0-9][0-9]\.)',filename).group(0)
