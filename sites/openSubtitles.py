@@ -57,8 +57,12 @@ def get_episode_info(data,filename,path=None):
 		data = get_best_subtitle(data,filename)
 	if isinstance(data,list):
 		data = data[0]
-	episode_name = data["MovieName"].rsplit("\"",1)[1].strip()
-	series_name = data["MovieName"].split("\"",2)[1].strip()
+	try:
+		episode_name = data["MovieName"].rsplit("\"",1)[1].strip()
+		series_name = data["MovieName"].split("\"",2)[1].strip()
+	except Exception as e:
+		print("openSubtitles: unable to get episode info")
+		return None,filename
 	return series_name,episode_name
 
 def get_best_subtitle(data_array,filename):
