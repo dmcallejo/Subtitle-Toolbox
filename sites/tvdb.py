@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import tvdb_api
 import tvdb_exceptions
+from classes.Entities import Episode
 
 class tvdb:
         """ Obtains information from TheTVDatabase  """
@@ -17,5 +18,6 @@ class tvdb:
                         print("tvdb: Episode not found:",series,"S"+season+"E"+episode)
                         return None
                 #TODO
-                print(search_result)
+                episode_info = Episode(series=series,season=season,episode=episode,title=search_result['episodename'])
+                return episode_info
 
