@@ -9,6 +9,7 @@ import configuration_manager as cm
 import time
 import sys,getopt
 import patoolib
+import sites
 
 configuration = None
 
@@ -82,6 +83,7 @@ def torrent_is_an_episode(torrent):
 
 def transmission_mode():
 	log_start()
+	tvdb = sites.tvdb.tvdb()
 	transmission = get_transmission_toolbox()
 	torrents=transmission.get_torrents()
 	outputDir = get_configuration().subtitles.output
@@ -91,17 +93,21 @@ def transmission_mode():
 			files = t.files()
 			video_file = None
 			subtitle_files = []
+			episode_info = None
 			# Video files and subtitle files lookup
 			for f in files:
 				if(is_valid_video_file(files[f]["name"])):
+					series,season,episode_number,info = st.parse_filename(files[f]["name"])
+					episode_info = tvdb.get_info(series,season,episode_number)
 					video_file = t.downloadDir+"/"+files[f]["name"]
 				if(is_valid_subtitle_file(files[f]["name"])):
 					subtitle_files.append(t.downloadDir+"/"+files[f]["name"])
 			# TODO: check if subtitle file is already uploaded, upload it if not. Merge it into the file.
 			if(len(subtitle_files)>0 and video_file != None):
+				print("Local subtitles found:",subtitle_files)
 				st.upload_subtitles(subtitle_files,video_file)
 
-			if(video_file != None):
+			elif(video_file != None):
 				status = None
 				try:
 					status = st.download_by_file(video_file,outputDir)
