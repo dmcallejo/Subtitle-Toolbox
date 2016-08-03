@@ -140,11 +140,11 @@ class Episode:
 	def title():
 		doc = "The episode title."
 		def fget(self):
-			return self.title
+			return self._title
 		def fset(self, value):
-			self.title = value
+			self._title = value
 		def fdel(self):
-			del self.title
+			del self._title
 		return locals()
 	title = property(**title())
 
