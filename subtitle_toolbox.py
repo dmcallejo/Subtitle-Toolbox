@@ -8,7 +8,7 @@ import configuration_manager as cm
 import math,getopt,re
 import utils
 import iso6392
-import shutil,os
+import shutil,os,sys
 from subprocess import call
 from classes import *
 import string
