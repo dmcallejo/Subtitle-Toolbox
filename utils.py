@@ -12,7 +12,7 @@ def get_page_from_URL(url,debug=False):
 	try:
 		req = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"}) 
 		response = urllib.request.urlopen(req,timeout=10)
-	except urllib.URLError as e:
+	except urllib.error.HTTPError as e:
 		print("Error getting ",url)
 		print(e)
 		return None

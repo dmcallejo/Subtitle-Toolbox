@@ -98,14 +98,14 @@ class Transmission_toolbox:
 def get_torrent_trackers(t):
 	""" Obtains a list of trackers from the torrentz website. """
 	#Getting torrentz page
-	url = "http://torrentz.eu/"+t.hashString
+	torrentz = "http://torrentz2.eu/"
+	url = torrentz+t.hashString
 	page = utils.get_page_from_URL(url)
 	if(page==None):
-		print("Torrentz.eu offline. Aborting...")
-		exit()
+		return
 	soup = BeautifulSoup(page,'lxml')
 	for tag in soup.find_all(href=re.compile("announce"),limit=1):
-		page = utils.get_page_from_URL("http://torrentz.eu"+tag.get("href"))
+		page = utils.get_page_from_URL(torrentz+tag.get("href"))
 		trackers = parse_uTorrent_trackers(page)
 		trackers = correct_tracker_urls(trackers)
 		return trackers
