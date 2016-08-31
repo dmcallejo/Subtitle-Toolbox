@@ -40,26 +40,31 @@ XML FORMAT:
 
 
 class Configuration_Manager:
-	def __init__(self):
-		os.chdir(os.path.dirname(os.path.realpath(__file__))) 	#	This will prevent relative paths to images from failing.
+
+	_default_filename = ".transmission_settings.xml"
+
+	def __init__(self,config_file):
+		if(not config_file):
+			config_file = self._default_filename
+			os.chdir(os.path.dirname(os.path.realpath(__file__))) 	#	This will prevent relative paths from failing.
 																# when executing the script outside the filepath.
 		self.transmission=configuration.Transmission_Config()
 		self.subtitles=configuration.Subtitles_Config()
 		self.openSubtitles=configuration.Account()
-		self.load_config()
+		self.load_config(config_file)
 
 
-	def load_config(self):
+	def load_config(self,config_file):
 		config_loaded=False
 		try:
-			file = open(".transmission_settings.xml","r")
+			file = open(config_file,"r")
 			self.config_loaded=True
 		except IOError as e:
 			print("No settings file. Creating new settings.")
 			self.create_config()
 		finally:
 			if not config_loaded:
-				file = open(".transmission_settings.xml","r")
+				file = open(config_file,"r")
 		try:
 			config_file = ET.parse(file)
 			config =  config_file.getroot()
@@ -195,7 +200,7 @@ class Configuration_Manager:
 			xml_accounts_openSubtitles_pass.text  = os_password
 
 		tree = ET.ElementTree(configuration_root)
-		tree.write(".transmission_settings.xml",pretty_print=True,xml_declaration=True,encoding='utf-8')
+		tree.write(config_file,pretty_print=True,xml_declaration=True,encoding='utf-8')
 
 	def parse_languages(self,languages):
 		""" Parses a languages string sepparated by comas """
