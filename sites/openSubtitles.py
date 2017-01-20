@@ -131,9 +131,9 @@ def upload_subtitles(subtitle_files,movie_file,episode_info):
 				'moviebytesize': movie_size,
 				'moviefilename': movie_file,
 				'subcontent': get_gzip_base64_encoded(subtitle)}}
-			print(params)
-			#url = os.upload_subtitles(params)
-			#assert type(url) == str
+			url = os_client.upload_subtitles(params)
+			assert type(url) == str
+			
 
 # Login functions
 
