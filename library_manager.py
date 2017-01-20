@@ -114,7 +114,6 @@ def transmission_mode():
 			elif(video_file != None):
 				process_file(transmission,video_file,outputDir)
 		print
-		return
 	log_end()
 
 def process_file(transmission,video_file,outputDir):
