@@ -59,8 +59,11 @@ def main(argv):
 	sites.subtitulos_es.get_all_subtitles(tvseries,season,episode)
 	exit(0)
 
-def upload_subtitles(subtitle_files,movie_file):
-	sites.openSubtitles.upload_subtitles(subtitle_files,movie_file)
+def upload_subtitles(subtitle_files,movie_file,episode_info):
+	if(episode_info == None):
+		print("No subtitle info available. Not uploading the local subtitles.")
+		return 1
+	sites.openSubtitles.upload_subtitles(subtitle_files,movie_file,episode_info)
 
 def download_by_file(video_file,output="../"):
 	if(video_file.rfind("/")!=-1):
@@ -73,11 +76,13 @@ def download_by_file(video_file,output="../"):
 	tvdb = sites.tvdb.tvdb()
 	tvdb.get_info(series,season,episode_number)
 	
-	series,episode_name = sites.openSubtitles.get_episode_info(None,filename,path)
-
+	series_name,episode_name = sites.openSubtitles.get_episode_info(None,filename,path)
 	if episode_name is None:
 		print("Error fetching subtitles: No subtitle found.")
 		return 1
+	if(series_name != None):
+		series = series_name
+	print(series,season,episode_number,episode_name,path,filename)
 	episode = Episode(series,season,episode_number,episode_name,path,filename)
 
 	results = search(episode)
@@ -109,11 +114,11 @@ def download_by_file(video_file,output="../"):
 	return result
 
 def parse_filename(filename):
+	if(filename.count('/')>0):
+		filename = filename.rsplit('/',maxsplit=1)[1]
 	#
 	# Series.S01.E02.info.mkv case
 	#
-	if(filename.count('/')>0):
-		filename = filename.rsplit('/',maxsplit=1)[1]
 	if(re.search('\.S[0-9]{1,2}E[0-9][0-9]\.',filename,flags=re.IGNORECASE)!=None): 
 		series = re.search('.+(?=\.[Ss][0-9][0-9])',filename).group(0)
 		season = re.search('(?<=[Ss])[0-9]{1,2}(?=[Ee][0-9][0-9]\.)',filename).group(0)

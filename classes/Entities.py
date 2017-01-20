@@ -91,16 +91,18 @@ class SubtitleRelease:
 class Episode:
 	""" Holds the subtitles (SubtitleRelease) from the several releases of an episode. """
 
-	def __init__(self,series=None,season=None,episode=None,title=None,path=None,filename=None):
+	def __init__(self,series=None,season=None,episode=None,episode_name=None,path=None,filename=None,series_imdb_id=None,episode_imdb_id=None):
 		self.series=series
 		self.season=season
 		self.episode=episode
-		self.title=title
+		self.episode_name=episode_name
 		self.path=path
 		self.filename=filename
+		self.series_imdb_id=series_imdb_id
+		self.episode_imdb_id=episode_imdb_id
 
 	def __str__(self):
-		string = self.series+" S"+str(self.season).zfill(2)+"E"+str(self.episode).zfill(2)+" - "+self.title
+		string = self.series+" S"+str(self.season).zfill(2)+"E"+str(self.episode).zfill(2)+" - "+self.episode_name
 		return string
 
 	def series():
@@ -137,16 +139,41 @@ class Episode:
 		return locals()
 	episode = property(**episode())
 
-	def title():
-		doc = "The episode title."
+	def episode_name():
+		doc = "The episode name."
 		def fget(self):
-			return self._title
+			return self._episode_name
 		def fset(self, value):
-			self._title = value
+			self._episode_name = value
 		def fdel(self):
-			del self._title
+			del self._episode_name
 		return locals()
-	title = property(**title())
+	episode_name = property(**episode_name())
+
+
+	def series_imdb_id():
+		doc = "The series imdb id."
+		def fget(self):
+			return self._series_imdb_id
+		def fset(self, value):
+			self._series_imdb_id = value
+		def fdel(self):
+			del self._series_imdb_id
+		return locals()
+	series_imdb_id = property(**series_imdb_id())
+
+
+	def episode_imdb_id():
+		doc = "The episode imdb id."
+		def fget(self):
+			return self._episode_imdb_id
+		def fset(self, value):
+			self._episode_imdb_id = value
+		def fdel(self):
+			del self._episode_imdb_id
+		return locals()
+	episode_imdb_id = property(**episode_imdb_id())
+
 
 	def releases():
 		doc = "The releases property."

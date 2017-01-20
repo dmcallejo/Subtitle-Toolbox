@@ -43,7 +43,7 @@ class Configuration_Manager:
 
 	_default_filename = ".transmission_settings.xml"
 
-	def __init__(self,config_file):
+	def __init__(self,config_file=None):
 		if(not config_file):
 			config_file = self._default_filename
 			os.chdir(os.path.dirname(os.path.realpath(__file__))) 	#	This will prevent relative paths from failing.

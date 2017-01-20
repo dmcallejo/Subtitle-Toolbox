@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 from pythonopensubtitles.opensubtitles import OpenSubtitles
-from pythonopensubtitles.utils import File
-from pythonopensubtitles.utils import get_md5
+from pythonopensubtitles.utils import File,get_md5,get_gzip_base64_encoded
 import configuration_manager as cm
 import utils
 import gzip
@@ -90,20 +89,51 @@ def get_best_rated(data_array):
 
 # Upload functions
 
-def upload_subtitles(subtitle_files,movie_file):
+def upload_subtitles(subtitle_files,movie_file,episode_info):
 	f = File(movie_file)
+	if(movie_file.count('/')>0):
+		movie_file =  movie_file.rsplit('/',maxsplit=1)[1]
 	movie_hash = f.get_hash()
 	movie_size = f.size
 	for subtitle in subtitle_files:
 		subtitle_md5 = get_md5(subtitle)
 		assert type(subtitle_md5) == str
+
+		if(subtitle.count('/')>0):
+			subtitle_filename = subtitle.rsplit('/',maxsplit=1)[1]
+		else:
+			subtitle_filename = subtitle
+
 		params = [{'cd1': [{'submd5hash': subtitle_md5,
-                  'subfilename': subtitle,
-                  'moviehash': movie_hash,
-                  'moviebytesize': movie_size}]}]
-		already_in_db = os_client.try_upload_subtitles(params)
+				  'subfilename': subtitle,
+				  'moviehash': movie_hash,
+				  'moviebytesize': movie_size}]}]
+		try:
+			already_in_db = os_client.try_upload_subtitles(params)
+		except Exception as e:
+			print("An error ocurred while trying to upload subtitles:",e)
+			return 1
 		assert type(already_in_db) == bool
-		print(already_in_db)
+		if(already_in_db):
+			print("Subtitle already in db")
+			continue
+		else:
+			if(episode_info.episode_imdb_id):
+				imdb_id = episode_info.episode_imdb_id
+			else:
+				print("No episode imdb id found. Using tv show imdb id")
+				imdb_id = episode_info.series_imdb_id
+			params = {'baseinfo': {'idmovieimdb': imdb_id},
+				'cd1': {
+				'subhash': subtitle_md5,
+				'subfilename': subtitle_filename,
+				'moviehash': movie_hash,
+				'moviebytesize': movie_size,
+				'moviefilename': movie_file,
+				'subcontent': get_gzip_base64_encoded(subtitle)}}
+			print(params)
+			#url = os.upload_subtitles(params)
+			#assert type(url) == str
 
 # Login functions
 

@@ -1,5 +1,7 @@
+bs4
 transmissionrpc
 lxml
 git+https://github.com/wummel/patool
 git+https://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitlespython-opensubtitles
 tvdb_api
+chardet
