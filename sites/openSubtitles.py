@@ -90,6 +90,8 @@ def get_best_rated(data_array):
 # Upload functions
 
 def upload_subtitles(subtitle_files,movie_file,episode_info):
+	if(token==None):
+		login()
 	f = File(movie_file)
 	if(movie_file.count('/')>0):
 		movie_file =  movie_file.rsplit('/',maxsplit=1)[1]
@@ -123,6 +125,7 @@ def upload_subtitles(subtitle_files,movie_file,episode_info):
 			else:
 				print("No episode imdb id found. Using tv show imdb id")
 				imdb_id = episode_info.series_imdb_id
+			imdb_id = imdb_id.replace("t", "")
 			params = {'baseinfo': {'idmovieimdb': imdb_id},
 				'cd1': {
 				'subhash': subtitle_md5,
@@ -130,7 +133,7 @@ def upload_subtitles(subtitle_files,movie_file,episode_info):
 				'moviehash': movie_hash,
 				'moviebytesize': movie_size,
 				'moviefilename': movie_file,
-				'subcontent': get_gzip_base64_encoded(subtitle)}}
+				'subcontent': str(get_gzip_base64_encoded(subtitle))}}
 			url = os_client.upload_subtitles(params)
 			if(url != None):
 				print("Subtitle upload succesful!")

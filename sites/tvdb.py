@@ -29,7 +29,6 @@ class tvdb:
                         return None
                 episode_name = search_result['episodename']
                 episode_imdb_id = search_result['imdb_id']
-                print(episode_imdb_id)
                 episode_info = Episode(series=series,season=season,episode=episode,episode_name=episode_name,series_imdb_id=series_imdb_id,episode_imdb_id=episode_imdb_id)
                 print(episode_info)
                 return episode_info
