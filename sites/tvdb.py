@@ -12,20 +12,26 @@ class tvdb:
 
         def get_info(self,series,season,episode):
                 print("tvdb: Searching",series,"S"+season+"E"+episode)
-                #Searching for the tv show first
                 try:
+                        #Searching for the tv show first
                         search_result = self.t[series]
+                
+                        series_imdb_id = search_result['imdb_id']
+
+                        #Episode search now
+                        search_result = self.t[series][int(season)][int(episode)]
+
                 except tvdb_exceptions.tvdb_shownotfound as e:
                         print("tvdb: tv show not found:",series)
                         return None
-                
-                series_imdb_id = search_result['imdb_id']
-
-                #Episode search now
-                try:
-                        search_result = self.t[series][int(season)][int(episode)]
                 except tvdb_exceptions.tvdb_episodenotfound as e:
                         print("tvdb: Episode not found:",series,"S"+season+"E"+episode)
+                        return None
+                except tvdb_exceptions.tvdb_error as e:
+                        print("tvdb: Unknown API Error:",e)
+                        return None
+                except Exception as e:
+                        print("tvdb: Unknown general error:",e)
                         return None
                 episode_name = search_result['episodename']
                 episode_imdb_id = search_result['imdb_id']
