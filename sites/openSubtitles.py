@@ -133,12 +133,14 @@ def upload_subtitles(subtitle_files,movie_file,episode_info):
 				'moviehash': movie_hash,
 				'moviebytesize': movie_size,
 				'moviefilename': movie_file,
-				'subcontent': str(get_gzip_base64_encoded(subtitle))}}
+				'subcontent': get_gzip_base64_encoded(subtitle).decode()}}
 			url = os_client.upload_subtitles(params)
 			if(url != None):
 				print("Subtitle upload succesful!")
 			else:
 				print("ERROR uploading subtitle.")
+				return 1
+			return 0
 			#assert type(url) == str
 			
 

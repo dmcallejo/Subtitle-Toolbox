@@ -63,7 +63,11 @@ def upload_subtitles(subtitle_files,movie_file,episode_info):
 	if(episode_info == None):
 		print("No subtitle info available. Not uploading the local subtitles.")
 		return 1
-	sites.openSubtitles.upload_subtitles(subtitle_files,movie_file,episode_info)
+	try:
+		return sites.openSubtitles.upload_subtitles(subtitle_files,movie_file,episode_info)
+	except Exception as e:
+		raise e
+
 
 def download_by_file(video_file,output="../"):
 	if(video_file.rfind("/")!=-1):

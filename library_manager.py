@@ -103,28 +103,28 @@ def transmission_mode():
 				if(is_valid_subtitle_file(files[f]["name"])):
 					subtitle_files.append(t.downloadDir+"/"+files[f]["name"])
 			# TODO: check if subtitle file is already uploaded, upload it if not. Merge it into the file.
+			status = None
 			if(len(subtitle_files)>0 and video_file != None):
 				print("Local subtitles found:",subtitle_files)
-				if(st.upload_subtitles(subtitle_files,video_file,episode_info) != 1):
-					process_file(transmission,video_file,outputDir)
+				if(st.upload_subtitles(subtitle_files,video_file,episode_info) == 0):
+					status = process_file(transmission,video_file,outputDir)
 				else:
 					print("Error uploading subtitles.")
 					continue
 
 			elif(video_file != None):
-				process_file(transmission,video_file,outputDir)
+				status = process_file(transmission,video_file,outputDir)
+			if (status == 0):
+				print("Deleting:",t.name)
+				transmission.remove_torrent(t)
 		print
 	log_end()
 
 def process_file(transmission,video_file,outputDir):
-	status = None
 	try:
-		status = st.download_by_file(video_file,outputDir)
+		return st.download_by_file(video_file,outputDir)
 	except Exception as e:
 		print("\t",e)
-	if (status == 0):
-		print("Deleting:",t)
-		transmission.remove_torrent(t)
 
 def directory_mode():
 	log_start()
