@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from lxml import etree as ET
+from xml.etree import ElementTree as ET
 import classes.Configuration as configuration
 import getpass
 import os
@@ -61,35 +61,41 @@ class Configuration_Manager:
 			self.config_loaded=True
 		except IOError as e:
 			print("No settings file. Creating new settings.")
-			self.create_config()
+			self.create_config(config_file)
 		finally:
 			if not config_loaded:
 				file = open(config_file,"r")
 		try:
 			config_file = ET.parse(file)
 			config =  config_file.getroot()
+			self.transmission.login=config.findall("./transmission/auth/login")[0].text
+			self.transmission.password=config.findall("./transmission/auth/password")[0].text
+			self.openSubtitles.username=config.findall("./accounts/openSubtitles/username")[0].text
+			self.openSubtitles.password=config.findall("./accounts/openSubtitles/password")[0].text
+			self.subtitles.languages=['eng']
 			for e in config.iter():
 				if e.tag=="address":
 					self.transmission.address=e.text
 				elif e.tag=="port":
 					self.transmission.port=e.text
-				elif e.tag=="login" and e.getparent().getparent().tag=="transmission":
-					self.transmission.login=e.text
-				elif e.tag=="password" and e.getparent().getparent().tag=="transmission":
-					self.transmission.password=e.text
+				#elif e.tag=="login" and e.tag=="transmission":
+				#	self.transmission.liogin=e.text
+				#elif e.tag=="password" and e.tag=="transmission":
+				#	self.transmission.password=e.text
 				elif e.tag=="input":
 					self.subtitles.input=e.text
 				elif e.tag=="output":
 					self.subtitles.output=e.text
-				elif e.tag=="languages" and e.getparent().tag=="subtitles":
-					languages = self.parse_languages(e.text)
-					if(languages==False):
-						raise Exception("Malformed configuration while parsing languages")
-					self.subtitles.languages=languages
-				elif e.tag=="username" and e.getparent().tag=="openSubtitles":
-					self.openSubtitles.username=e.text
-				elif e.tag=="password" and e.getparent().tag=="openSubtitles":
-					self.openSubtitles.password=e.text
+				#elif e.tag=="languages" and e.tag=="..subtitles":
+				#	languages = self.parse_languages(e.text)
+				#	if(languages==False):
+				#		raise Exception("Malformed configuration while parsing languages")
+				#	self.subtitles.languages=languages
+				#elif e.tag=="username" and e.tag=="openSubtitles":
+				#	self.openSubtitles.username=e.text
+				#elif e.tag=="password" and e.tag=="openSubtitles":
+				#	self.openSubtitles.password=e.text
+	
 		except e:
 			print(e)
 			print("Malformed Configuraton. See above...")
@@ -97,7 +103,7 @@ class Configuration_Manager:
 
 
 
-	def create_config(self):
+	def create_config(self,config_file):
 		from sys import stdin
 		print("Type transmission client address without port [localhost]")
 		address = stdin.readline().strip()
@@ -200,7 +206,7 @@ class Configuration_Manager:
 			xml_accounts_openSubtitles_pass.text  = os_password
 
 		tree = ET.ElementTree(configuration_root)
-		tree.write(config_file,pretty_print=True,xml_declaration=True,encoding='utf-8')
+		tree.write(config_file,xml_declaration=True,encoding='utf-8')
 
 	def parse_languages(self,languages):
 		""" Parses a languages string sepparated by comas """
