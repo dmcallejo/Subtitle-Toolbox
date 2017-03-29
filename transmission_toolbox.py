@@ -103,7 +103,7 @@ def get_torrent_trackers(t):
 	page = utils.get_page_from_URL(url)
 	if(page==None):
 		return
-	soup = BeautifulSoup(page,'lxml')
+	soup = BeautifulSoup(page, "html.parser")
 	for tag in soup.find_all(href=re.compile("announce"),limit=1):
 		page = utils.get_page_from_URL(torrentz+tag.get("href"))
 		trackers = parse_uTorrent_trackers(page)
