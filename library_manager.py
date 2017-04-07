@@ -117,6 +117,8 @@ def transmission_mode():
 			if (status == 0):
 				print("Deleting:",t.name)
 				transmission.remove_torrent(t)
+			else:
+				print("Process returned status:",status)
 		print
 	log_end()
 

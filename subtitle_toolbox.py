@@ -111,7 +111,7 @@ def download_by_file(video_file,output="../"):
 	
 	output+="/"+episode.series+"/"+episode.series+" S"+str(season).zfill(2)
 	sys.stdout.flush()
-	mkvmerge_args = ["mkvmerge","-o", output+"/"+str(episode)+".mkv", "--title", "\""+str(episode)+"\"", "--language", "1:eng", "--track-name", "1:English", path.replace("\\","")+"/"+filename]+subtitle_args
+	mkvmerge_args = ["mkvmerge","-v","-o", output+"/"+str(episode)+".mkv", "--title", "\""+str(episode)+"\"", "--language", "1:eng", "--track-name", "1:English", path.replace("\\","")+"/"+filename]+subtitle_args
 	
 	result = call(mkvmerge_args)
 	shutil.rmtree(tmp_path)

@@ -13,7 +13,8 @@ token = None
 
 def get_all_subtitles(path,filename,languages=['all']):
 	if(token==None):
-		login()
+		if(login()==None):
+			return
 	f = File(os.path.join(path,filename))
 	hash = f.get_hash()
 	size = f.size
@@ -91,7 +92,8 @@ def get_best_rated(data_array):
 
 def upload_subtitles(subtitle_files,movie_file,episode_info):
 	if(token==None):
-		login()
+		if(login()==None):
+			return
 	f = File(movie_file)
 	if(movie_file.count('/')>0):
 		movie_file =  movie_file.rsplit('/',maxsplit=1)[1]
@@ -147,9 +149,14 @@ def upload_subtitles(subtitle_files,movie_file,episode_info):
 # Login functions
 
 def login():
-	configuration_manager=cm.Configuration_Manager()
-	token = os_client.login(configuration_manager.openSubtitles.username, configuration_manager.openSubtitles.password)
-	print("Logged in.")
+	try:
+		configuration_manager=cm.Configuration_Manager()
+		token = os_client.login(configuration_manager.openSubtitles.username, configuration_manager.openSubtitles.password)
+		print("Logged in.")
+		return token
+	except Exception as e:
+		print("Couldn't log in:",e)
+		return None
 
 def logout():
 	os_client.logout()
